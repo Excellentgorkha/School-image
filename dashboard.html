@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        input, button { display: block; width: 90%; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        button { background: #007bff; color: white; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+
+    <!-- Admin Actions for Upload and Delete -->
+    <div class="container" id="admin-actions">
+        <h2>Upload Photos</h2>
+        <input type="file" id="photo-file">
+        <button onclick="uploadPhoto()">Upload Photo</button>
+
+        <h2>Delete Photo</h2>
+        <input type="text" id="photo-id" placeholder="Enter photo ID to delete">
+        <button onclick="deletePhoto()">Delete Photo</button>
+    </div>
+
+    <h2>Public Photo Gallery</h2>
+    <div id="photo-gallery"></div>
+
+    <script>
+        const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
+        const SUPABASE_ANON_KEY = "your-anon-key-here"; // Replace with your actual key
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Function to upload photos
+        async function uploadPhoto() {
+            const fileInput = document.getElementById("photo-file");
+            const file = fileInput.files[0];
+            const fileName = file.name;
+
+            // Upload the photo to Supabase Storage
+            const { data, error } = await supabase.storage.from('photos').upload(fileName, file);
+
+            if (error) {
+                alert("Error uploading photo: " + error.message);
+            } else {
+                alert("Photo uploaded successfully!");
+                loadPhotos();  // Refresh the photo gallery
+            }
+        }
+
+        // Function to delete photos
+        async function deletePhoto() {
+            const photoId = document.getElementById("photo-id").value;
+
+            // Delete the photo from Supabase Storage
+            const { error } = await supabase.storage.from('photos').remove([photoId]);
+
+            if (error) {
+                alert("Error deleting photo: " + error.message);
+            } else {
+                alert("Photo deleted successfully!");
+                loadPhotos();  // Refresh the photo gallery
+            }
+        }
+
+        // Load photos from Supabase storage and display in gallery
+        async function loadPhotos() {
+            const { data, error } = await supabase.storage.from('photos').list();
+
+            if (error) {
+                console.error("Error loading photos: " + error.message);
+                return;
+            }
+
+            const photoGallery = document.getElementById("photo-gallery");
+            photoGallery.innerHTML = ""; // Clear existing photos
+
+            // Display each photo in the gallery
+            data.forEach(photo => {
+                const imgElement = document.createElement('img');
+                imgElement.src = supabase.storage.from('photos').getPublicUrl(photo.name).publicURL;
+                imgElement.alt = photo.name;
+                imgElement.style.width = '200px';
+                imgElement.style.margin = '10px';
+                photoGallery.appendChild(imgElement);
+            });
+        }
+
+        // Call loadPhotos when page loads
+        window.onload = loadPhotos;
+    </script>
+
+</body>
+</html>

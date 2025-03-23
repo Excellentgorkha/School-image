@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Photo Gallery</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .gallery { display: flex; flex-wrap: wrap; justify-content: center; }
+        .gallery img { width: 200px; margin: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>Public Photo Gallery</h1>
+    <div class="gallery" id="photo-gallery"></div>
+
+    <script>
+        const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
+        const SUPABASE_ANON_KEY = "your-anon-key-here"; // Replace with your actual key
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Load photos from Supabase storage and display in gallery
+        async function loadPhotos() {
+            const { data, error } = await supabase.storage.from('photos').list();
+
+            if (error) {
+                console.error("Error loading photos: " + error.message);
+                return;
+            }
+
+            const photoGallery = document.getElementById("photo-gallery");
+            photoGallery.innerHTML = ""; // Clear existing photos
+
+            // Display each photo in the gallery
+            data.forEach(photo => {
+                const imgElement = document.createElement('img');
+                imgElement.src = supabase.storage.from('photos').getPublicUrl(photo.name).publicURL;
+                imgElement.alt = photo.name;
+                photoGallery.appendChild(imgElement);
+            });
+        }
+
+        // Call loadPhotos when page loads
+        window.onload = loadPhotos;
+    </script>
+
+</body>
+</html>
