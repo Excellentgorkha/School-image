@@ -27,6 +27,7 @@
 
             if (error) {
                 console.error("Error loading photos: " + error.message);
+                alert("Error loading photos. Please try again later.");
                 return;
             }
 
@@ -36,8 +37,14 @@
             // Display each photo in the gallery
             data.forEach(photo => {
                 const imgElement = document.createElement('img');
-                imgElement.src = supabase.storage.from('photos').getPublicUrl(photo.name).publicURL;
+                const photoUrl = supabase.storage.from('photos').getPublicUrl(photo.name).publicURL;
+
+                imgElement.src = photoUrl;
                 imgElement.alt = photo.name;
+                imgElement.onerror = () => {
+                    imgElement.src = "https://via.placeholder.com/200?text=Image+Not+Found"; // Placeholder for error
+                };
+
                 photoGallery.appendChild(imgElement);
             });
         }
