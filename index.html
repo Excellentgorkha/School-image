@@ -3,42 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Public Photo Gallery</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; }
-        .container { max-width: 400px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
-        input, button { display: block; width: 90%; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
-        button { background: #007bff; color: white; cursor: pointer; }
-        button:hover { background: #0056b3; }
+        .gallery { display: flex; flex-wrap: wrap; justify-content: center; }
+        .gallery img { width: 200px; margin: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Admin Login</h1>
-        <input type="text" id="admin-username" placeholder="Enter Admin Username">
-        <input type="password" id="admin-password" placeholder="Enter Admin Password">
-        <button onclick="adminLogin()">Login</button>
-    </div>
+    <h1>Public Photo Gallery</h1>
+    <div class="gallery" id="photo-gallery"></div>
 
     <script>
-        const ADMIN_USERNAME = "admin";
-        const ADMIN_PASSWORD = "password";
+        const SUPABASE_URL = "https://mbranrgqguzahmqtnequ.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icmFucmdxZ3V6YWhtcXRuZXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3NzQzMzgsImV4cCI6MjA1ODM1MDMzOH0.LXef-yaXyNA-3NnbR2txduJ5kzJ0tUqS9BEKRKmRGFA"; // Replace with your actual key
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Admin login function
-        function adminLogin() {
-            const username = document.getElementById("admin-username").value;
-            const password = document.getElementById("admin-password").value;
-
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                alert("Admin Login successful!");
-                window.location.href = "dashboard.html"; // Redirect to the admin dashboard page
-            } else {
-                alert("Invalid admin credentials. Please try again.");
-            }
-        }
-    </script>
-
-</body>
-</html>
+        // Load photos from Supabase storage and display in gallery
+        async function loadPhotos() {
+            const { data
