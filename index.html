@@ -36,9 +36,10 @@
             const username = document.getElementById("admin-username").value;
             const password = document.getElementById("admin-password").value;
 
+            // Check if username and password match
             if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
                 alert("Admin Login successful!");
-                window.location.href = "dashboard.html"; // Redirect to the admin dashboard page
+                window.location.href = "dashboard.html"; // Ensure dashboard.html exists or adjust the path
             } else {
                 alert("Invalid admin credentials. Please try again.");
             }
