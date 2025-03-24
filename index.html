@@ -9,18 +9,60 @@
         body { text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; }
         .gallery { display: flex; flex-wrap: wrap; justify-content: center; }
         .gallery img { width: 200px; margin: 10px; }
+        .admin-button { 
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .admin-button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
+    <header>
+        <img src="logo.png" alt="Logo" style="width: 100px; height: auto; margin: 20px;">
+    </header>
+
     <h1>Public Photo Gallery</h1>
+
+    <!-- Admin Login Button -->
+    <button class="admin-button" onclick="window.location.href='login.html';">Admin Login</button>
+
     <div class="gallery" id="photo-gallery"></div>
 
     <script>
-        const SUPABASE_URL = "https://mbranrgqguzahmqtnequ.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icmFucmdxZ3V6YWhtcXRuZXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3NzQzMzgsImV4cCI6MjA1ODM1MDMzOH0.LXef-yaXyNA-3NnbR2txduJ5kzJ0tUqS9BEKRKmRGFA"; // Replace with your actual key
+        const SUPABASE_URL = "https://your-project.supabase.co"; // Replace with your actual URL
+        const SUPABASE_ANON_KEY = "your-anon-key"; // Replace with your actual key
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Load photos from Supabase storage and display in gallery
         async function loadPhotos() {
-            const { data
+            const { data, error } = await supabase.storage.from('photos').list();
+
+            if (error) {
+                console.error("Error loading photos: " + error.message);
+                return;
+            }
+
+            const photoGallery = document.getElementById("photo-gallery");
+            photoGallery.innerHTML = ""; // Clear existing photos
+
+            // Display each photo in the gallery
+            data.forEach(photo => {
+                const imgElement = document.createElement('img');
+                imgElement.src = supabase.storage.from('photos').getPublicUrl(photo.name).publicURL;
+                imgElement.alt = photo.name;
+                photoGallery.appendChild(imgElement);
+            });
+        }
+
+        // Call loadPhotos when page loads
+        window.onload = loadPhotos;
+    </script>
+
+</body>
+    </html>
